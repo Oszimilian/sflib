@@ -2,6 +2,7 @@
 #define SIGNAL_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef enum {
 	_INT,
@@ -11,6 +12,7 @@ typedef enum {
 
 typedef struct Signal {
 	SignalType type;
+	bool dirty;
 	union {
 		int _int;
 		float _float;
@@ -76,9 +78,11 @@ typedef struct Signal {
 #define SIGNAL_GET(...) GET_PICK(__VA_ARGS__, GET_4, GET_3, GET_2, GET_1)(__VA_ARGS__)
 
 
+
 #define SIGNAL_STORE(sptr, val) \
-    ((sptr)->type == _FLOAT ? (void)((sptr)->value._float = (val)) \
-                            : (void)((sptr)->value._int   = (val)))
+    ( (sptr)->dirty = true, \
+      (sptr)->type == _FLOAT ? (void)((sptr)->value._float = (val)) \
+                             : (void)((sptr)->value._int   = (val)) )
 
 
 #define SET_2(name, val)          SIGNAL_STORE(&(name), val)
@@ -88,4 +92,4 @@ typedef struct Signal {
 #define SET_PICK(_1, _2, _3, _4, _5, NAME, ...) NAME
 #define SIGNAL_SET(...) SET_PICK(__VA_ARGS__, SET_5, SET_4, SET_3, SET_2, SET_1)(__VA_ARGS__)
 
-#endif /* SIGNAL_H */
+#endif

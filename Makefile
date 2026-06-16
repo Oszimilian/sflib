@@ -1,8 +1,12 @@
-all:
-	gcc main.c -o main
+EXAMPLES = model feedback submodel module
 
-example:
-	gcc examples/example_module.c -o examples/example
+all:
+	for d in $(EXAMPLES); do $(MAKE) -C examples/$$d; done
 
 clean:
-	rm -f main examples/example
+	for d in $(EXAMPLES); do $(MAKE) -C examples/$$d clean; done
+
+.PHONY: all clean $(EXAMPLES)
+
+$(EXAMPLES):
+	$(MAKE) -C examples/$@
